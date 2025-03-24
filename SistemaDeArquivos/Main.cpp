@@ -1,3 +1,5 @@
+//g++ -o filesystem Main.cpp BootRecord.cpp FAT.cpp RootDirectory.cpp DataArea.cpp FileSystem.cpp
+
 #include "FileSystem.h"
 #include <iostream>
 #include <string>
