@@ -1,7 +1,6 @@
 #include "BootRecord.h"
 #include <cstring>
 
-// Construtor
 BootRecordManager::BootRecordManager() {
     // Inicializa com valores padrão
     bootRecord.bytesPerSector = BYTES_PER_SECTOR_DEFAULT;

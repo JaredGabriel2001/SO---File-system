@@ -16,7 +16,7 @@ struct BootRecord {
 
 class BootRecordManager {
 public:
-    // Construtor
+
     BootRecordManager();
 
     // Função para formatar o sistema de arquivos
