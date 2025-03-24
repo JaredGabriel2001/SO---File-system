@@ -31,10 +31,10 @@ bool FileSystem::format(uint32_t totalSectors, uint16_t rootEntryCount, uint8_t 
     bootRecord.saveToDisk(disk);
 
     // Calcular o número de clusters
-    uint32_t rootDirSectors = (rootEntryCount * 32 + 511) / 512; // 512 é o valor padrão de bytes por setor
+    uint32_t rootDirSectors = (rootEntryCount * 32 + 511) / 512; // Cada entrada do Root Directory ocupa 32 bytes, e o resultado é arredondado para o número de setores (dividindo por 512 bytes por setor)
     uint32_t reservedSectors = 1; // Boot Record
-    uint32_t dataSectors = totalSectors - reservedSectors - rootDirSectors;
-    uint32_t clusterCount = dataSectors / sectorsPerCluster;
+    uint32_t dataSectors = totalSectors - reservedSectors - rootDirSectors; //Calcula o número de setores disponíveis para dados
+    uint32_t clusterCount = dataSectors / sectorsPerCluster; //Calcula o número total de clusters
 
     // Inicializar a FAT
     delete fat; // Liberar memória, se já existir
@@ -60,6 +60,7 @@ bool FileSystem::format(uint32_t totalSectors, uint16_t rootEntryCount, uint8_t 
     return true;
 }
 
+//Cópia de um arquivo do disco rígido para o sistema de arquivos 
 bool FileSystem::copyToSystem(const std::string& sourcePath, const std::string& destFileName) {
     // Abrir o arquivo de origem
     std::ifstream inFile(sourcePath, std::ios::binary);
@@ -80,7 +81,7 @@ bool FileSystem::copyToSystem(const std::string& sourcePath, const std::string& 
 
     // Calcular o número de clusters necessários
     uint32_t clusterSize = dataArea->getClusterSize();
-    uint32_t clustersNeeded = (fileSize + clusterSize - 1) / clusterSize;
+    uint32_t clustersNeeded = (fileSize + clusterSize - 1) / clusterSize; //Divide o tamanho do arquivo pelo tamanho do cluster e arredonda para cima
 
     // Alocar clusters na FAT
     auto clusters = fat->allocateClusters(clustersNeeded);
@@ -91,8 +92,8 @@ bool FileSystem::copyToSystem(const std::string& sourcePath, const std::string& 
 
     // Escrever os dados na Área de Dados
     for (size_t i = 0; i < clusters.size(); ++i) {
-        uint32_t sizeToWrite = (i == clusters.size() - 1) ? (fileSize % clusterSize ? fileSize % clusterSize : clusterSize) : clusterSize;
-        dataArea->writeData(clusters[i], fileData.data() + i * clusterSize, sizeToWrite);
+        uint32_t sizeToWrite = (i == clusters.size() - 1) ? (fileSize % clusterSize ? fileSize % clusterSize : clusterSize) : clusterSize; //Para o último cluster, escreve apenas o restante do arquivo (fileSize % clusterSize) || Para os outros clusters, escreve o tamanho total do cluster (clusterSize).
+        dataArea->writeData(clusters[i], fileData.data() + i * clusterSize, sizeToWrite);  
     }
 
     // Adicionar entrada no Root Directory
@@ -113,6 +114,7 @@ bool FileSystem::copyToSystem(const std::string& sourcePath, const std::string& 
     return true;
 }
 
+//Cópia de um arquivo do sistema de arquivos para o disco rígido 
 bool FileSystem::copyFromSystem(const std::string& fileName, const std::string& destPath) {
     // Encontrar o arquivo no Root Directory
     RootEntry* entry = rootDir->findFile(fileName);
@@ -146,10 +148,13 @@ bool FileSystem::copyFromSystem(const std::string& fileName, const std::string& 
     return true;
 }
 
+//Listagem dos arquivos armazenados no sistema de arquivos 
 void FileSystem::listFiles() const {
     rootDir->listFiles();
 }
 
+
+//Remoção de arquivos 
 bool FileSystem::removeFile(const std::string& fileName) {
     // Encontrar o arquivo no Root Directory
     RootEntry* entry = rootDir->findFile(fileName);

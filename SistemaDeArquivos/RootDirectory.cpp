@@ -49,8 +49,8 @@ bool RootDirectoryManager::removeFile(const std::string& fileName) {
 
 // Lista todos os arquivos no Root Directory
 void RootDirectoryManager::listFiles() const {
-    bool hasFiles = false;
-    for (const auto& entry : entries) {
+    bool hasFiles = false; //será usada para determinar se o Root Directory está vazio
+    for (const auto& entry : entries) { //número total de entradas no Root Directory
         if (entry.fileName[0] != 0) { // Entrada não vazia
             hasFiles = true;
             std::cout << "File: " << entry.fileName
