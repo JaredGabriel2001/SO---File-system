@@ -1,3 +1,4 @@
+// Main.cpp
 #include "FileSystem.h"
 #include <iostream>
 #include <string>
@@ -8,11 +9,32 @@ using namespace std;
 int main() {
     try {
         // 1. Definir parâmetros do sistema de arquivos
-        const uint32_t TOTAL_SECTORS = 1000; // Número total de setores
+        uint32_t TOTAL_SECTORS;
         const uint16_t ROOT_ENTRY_COUNT = 16; // Número de entradas no Root Directory
         const uint8_t SECTORS_PER_CLUSTER = 1; // Setores por cluster
         const uint32_t BYTES_PER_SECTOR = 512; // Bytes por setor (definido no BootRecord)
-        const string DISK_PATH = "filesystem.img"; // Nome do arquivo .img
+        string DISK_PATH; // Nome do arquivo .img, será definido pelo usuário
+
+        // Pedir ao usuário o nome do arquivo .img
+        cout << "Digite o nome do arquivo .img (ex.: filesystem.img): ";
+        getline(cin, DISK_PATH);
+
+        // Validar entrada (opcional, para evitar entradas vazias)
+        if (DISK_PATH.empty()) {
+            cerr << "Nome do arquivo não pode ser vazio! Usando 'filesystem.img' como padrão." << endl;
+            DISK_PATH = "filesystem.img";
+        }
+
+        // Pedir ao usuário o tamanho em setores
+        cout << "Digite o tamanho da partição em setores (ex.: 1000): ";
+        cin >> TOTAL_SECTORS;
+        cin.ignore(); // Limpar o buffer do \n
+
+        // Validar entrada
+        if (TOTAL_SECTORS < 10) { // Valor mínimo para garantir espaço para as estruturas
+            cerr << "Tamanho muito pequeno! Deve ser pelo menos 10 setores." << endl;
+            return 1;
+        }
 
         // 2. Criar o arquivo .img com o tamanho apropriado usando FILE*
         cout << "Criando arquivo " << DISK_PATH << "..." << endl;
