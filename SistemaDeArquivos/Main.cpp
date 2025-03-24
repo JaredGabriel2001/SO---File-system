@@ -9,7 +9,7 @@ using namespace std;
 
 int main() {
     try {
-        // 1. Definir parâmetros do sistema de arquivos
+        // Definir parâmetros do sistema de arquivos
         uint32_t TOTAL_SECTORS;
         const uint16_t ROOT_ENTRY_COUNT = 16; // Número de entradas no Root Directory
         const uint8_t SECTORS_PER_CLUSTER = 1; // Setores por cluster
@@ -37,7 +37,7 @@ int main() {
             return 1;
         }
 
-        // 2. Criar o arquivo .img com o tamanho apropriado usando FILE*
+        // Criar o arquivo .img com o tamanho apropriado usando FILE*
         cout << "Criando arquivo " << DISK_PATH << "..." << endl;
         FILE* imgFile = fopen(DISK_PATH.c_str(), "wb");
         if (!imgFile) {
@@ -50,10 +50,10 @@ int main() {
         fputc(0, imgFile); // Escrever um byte no final para definir o tamanho
         fclose(imgFile);
 
-        // 3. Criar o sistema de arquivos
+        // Criar o sistema de arquivos
         FileSystem fs(DISK_PATH);
 
-        // 4. Formatar o sistema
+        // Formatar o sistema
         cout << "Formatando o sistema de arquivos..." << endl;
         if (fs.format(TOTAL_SECTORS, ROOT_ENTRY_COUNT, SECTORS_PER_CLUSTER)) {
             cout << "Formatação concluída com sucesso!" << endl;
@@ -62,7 +62,7 @@ int main() {
             return 1;
         }
 
-        // 5. Menu interativo
+        // Menu interativo
         int choice;
         string sourcePath, destFileName, destPath, fileName;
 

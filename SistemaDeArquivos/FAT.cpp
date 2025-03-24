@@ -55,7 +55,7 @@ void FATManager::freeClusters(uint16_t startCluster) {
 // Obtém o próximo cluster na cadeia
 uint16_t FATManager::getNextCluster(uint16_t cluster) const {
     if (cluster >= fatTable.size()) {
-        return CLUSTER_EOF; // Cluster inválido
+        return CLUSTER_EOF; 
     }
     return fatTable[cluster];
 }
